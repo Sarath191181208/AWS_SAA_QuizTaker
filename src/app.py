@@ -1,7 +1,11 @@
+"""
+This file contains the main app logic and Flet UI entry point.
+"""
 from copy import deepcopy
+from functools import partial
+
 import flet as ft
 from src.quiz import get_random_question, update_probability, update_question_in_file
-from functools import partial
 
 
 def main(page: ft.Page):
@@ -13,8 +17,6 @@ def main(page: ft.Page):
 
     chosen_answers_list: list[int] = []
     allowed_answers = max(1, len(question_data.answers))
-
-    error_msg: str | None = None
 
     if allowed_answers > 1:
         question_body += (
@@ -75,7 +77,7 @@ def main(page: ft.Page):
                                     ),
                                     ft.TextButton(
                                         "Update Answer",
-                                        on_click= lambda _: __update_answer_and_refresh(),
+                                        on_click=lambda _: __update_answer_and_refresh(),
                                     ),
                                 ]
                             ),
@@ -120,17 +122,6 @@ def main(page: ft.Page):
         on_click=on_submit_button_click,
         disabled=len(chosen_answers_list) < allowed_answers,
     )
-
-    # show error message if any with red color and bold font
-    # along with error icon
-    if error_msg:
-        error_msg_widget = ft.Row(
-            [
-                ft.Icon(ft.icons.ERROR, size=16, color=ft.colors.RED_900),
-                ft.Text(error_msg, size=14, color=ft.colors.RED_900),
-            ],
-        )
-        page.add(error_msg_widget)
 
     page.add(
         ft.Column(

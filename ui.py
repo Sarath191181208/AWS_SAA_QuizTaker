@@ -1,6 +1,3 @@
-import json
-import random
-
 import flet as ft
 from src.app import main
 
