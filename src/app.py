@@ -5,15 +5,18 @@ from copy import deepcopy
 from functools import partial
 
 import flet as ft
+from src.quiz import Question
 from src.quiz import get_random_question, update_probability, update_question_in_file
 
 
 def main(page: ft.Page):
+    """
+    Main app logic
+    """
     page.title = "AWS Solutions Architect Associate Exam Prep"
+
     question_data = get_random_question()
-    ques = question_data.question.split("\n")
-    question_header = ques[0]
-    question_body = "".join(ques[1:])
+    question_header, question_body = __get_header_and_description(question_data)
 
     chosen_answers_list: list[int] = []
     allowed_answers = max(1, len(question_data.answers))
@@ -24,20 +27,9 @@ def main(page: ft.Page):
         )
 
     def on_option_selected(i: int, e: ft.ControlEvent | None):
-        if i not in chosen_answers_list:
-            if len(chosen_answers_list) >= allowed_answers:
-                chosen_answers_list.pop(0)
-            chosen_answers_list.append(i)
-        for idx, checkbox in enumerate(checkboxes):
-            if idx == i:
-                if e is None:  # tapped on text
-                    checkbox.value = not checkbox.value
-                if not checkbox.value:
-                    chosen_answers_list.remove(i)
-                continue
-            if idx in chosen_answers_list:
-                continue
-            checkbox.value = False
+        is_tapped_on_text = e is None
+        __put_ans_in_list(i, chosen_answers_list, allowed_answers)
+        __update_check_boxes_ui(i, checkboxes, chosen_answers_list, is_tapped_on_text)
         submit_button.disabled = len(chosen_answers_list) < allowed_answers
         page.update()
 
@@ -45,7 +37,7 @@ def main(page: ft.Page):
         page.clean()
         main(page)
 
-    def __update_answer_and_refresh():
+    def update_answer_and_refresh():
         new_ques_data = deepcopy(question_data)
         new_ques_data.answers = chosen_answers_list
         update_question_in_file(new_ques_data)
@@ -65,25 +57,15 @@ def main(page: ft.Page):
                 f"No correct answer found in question data for {question_header}"
             )
             page.show_dialog(
-                ft.AlertDialog(
-                    title=ft.Text("Error"),
-                    content=ft.Text(error_msg),
-                    actions=[
-                        ft.Container(
-                            ft.Row(
-                                [
-                                    ft.TextButton(
-                                        "Ok", on_click=lambda _: page.close_dialog()
-                                    ),
-                                    ft.TextButton(
-                                        "Update Answer",
-                                        on_click=lambda _: __update_answer_and_refresh(),
-                                    ),
-                                ]
-                            ),
-                            margin=ft.margin.only(left=-16),
-                        )
+                create_err_alert_dialog(
+                    page,
+                    [
+                        ft.TextButton(
+                            "Update Answer",
+                            on_click=lambda _: update_answer_and_refresh(),
+                        ),
                     ],
+                    error_msg,
                 )
             )
             return
@@ -97,6 +79,10 @@ def main(page: ft.Page):
             update_question_in_file(new_ques_data)
 
         page.update()
+
+    ###################
+    ######## UI #######
+    ###################
 
     checkboxes = []
     for i in range(len(question_data.options)):
@@ -134,6 +120,70 @@ def main(page: ft.Page):
             ]
         )
     )
+
+
+def create_err_alert_dialog(
+    page: ft.Page, more_actions: list[ft.Control], error_msg: str
+) -> ft.AlertDialog:
+    """
+    Creates an error alert dialog
+    """
+    return ft.AlertDialog(
+        title=ft.Text("Error"),
+        content=ft.Text(error_msg),
+        actions=[
+            ft.Container(
+                ft.Row(
+                    [
+                        ft.TextButton("Ok", on_click=lambda _: page.close_dialog()),
+                        *more_actions,
+                    ]
+                ),
+                margin=ft.margin.only(left=-16),
+            )
+        ],
+    )
+
+
+def __get_header_and_description(question_data: Question) -> tuple[str, str]:
+    """
+    Returns header and description for the question
+    """
+    ques = question_data.question.split("\n")
+    question_header = ques[0]
+    question_body = "".join(ques[1:])
+    return question_header, question_body
+
+
+def __put_ans_in_list(i: int, chosen_answers_list: list[int], allowed_answers: int):
+    """
+    Selects an answer
+    """
+    if i not in chosen_answers_list:
+        if len(chosen_answers_list) >= allowed_answers:
+            chosen_answers_list.pop(0)
+        chosen_answers_list.append(i)
+
+
+def __update_check_boxes_ui(
+    i: int,
+    checkboxes: list[ft.Checkbox],
+    chosen_answers_list: list[int],
+    is_tapped_on_text: bool = False,
+):
+    """
+    Updates the checkboxes
+    """
+    for idx, checkbox in enumerate(checkboxes):
+        if idx == i:
+            if is_tapped_on_text:
+                checkbox.value = not checkbox.value
+            if not checkbox.value:
+                chosen_answers_list.remove(i)
+            continue
+        if idx in chosen_answers_list:
+            continue
+        checkbox.value = False
 
 
 def split_text_to_widgets(text: str, click_fn, **kwargs) -> list[ft.Control]:
