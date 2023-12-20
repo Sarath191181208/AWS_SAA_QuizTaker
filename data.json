@@ -336,9 +336,9 @@
             "Create a customer managed KMS key and an S3 bucket in each Region. Configure the S3 buckets to use server-side encryption with Amazon S3 managedencryption keys (SSE-S3). Configure replication between the S3 buckets.",
             "Create a customer managed KMS key and an S3 bucket in each Region. Configure the S3 buckets to use server-side encryption with AWS KMS keys (SSE-KMS).Configure replication between the S3 buckets."
         ],
-        "total_times_question_attempted": 2,
-        "correct_times_question_attempted": 1,
-        "current_probability": 0.4
+        "total_times_question_attempted": 0,
+        "correct_times_question_attempted": 0,
+        "current_probability": 0
     },
     {
         "question": "Question 37\n\nA company recently launched a variety of new workloads on Amazon EC2 instances in its AWS account. The company needs to create a strategy to access and administer\n\nthe instances remotely and securely. The company needs to implement a repeatable process that works with native AWS services and follows the AWS Well-Architected\nFramework.\n\nWhich solution will meet these requirements with the LEAST operational overhead?\n",
@@ -485,9 +485,9 @@
             "Move the catalog from the instance store to Amazon S3 Glacier Deep Archive.",
             "Move the catalog to an Amazon Elastic File System (Amazon EFS) file system."
         ],
-        "total_times_question_attempted": 2,
-        "correct_times_question_attempted": 1,
-        "current_probability": 0.4
+        "total_times_question_attempted": 0,
+        "correct_times_question_attempted": 0,
+        "current_probability": 0
     },
     {
         "question": "Question 49\n\nAcompany stores call transcript files on a monthly basis. Users access the files randomly within 1 year of the call, but users access the files infrequently after 1 year. The\ncompany wants to optimize its solution by giving users the ability to query and retrieve files that are less than 1-year-old as quickly as possible. A delay in retrieving older\nfiles is acceptable.\n\nWhich solution will meet these requirements MOST cost-effectively?\n",
@@ -1525,7 +1525,7 @@
     {
         "question": "Question 170\n\nAccompany is using a centralized AWS account to store log data in various Amazon S3 buckets. A solutions architect needs to ensure that the data is encrypted at rest\nbefore the data is uploaded to the S3 buckets. The data also must be encrypted in transit.\n\nWhich solution meets these requirements?\n",
         "answers": [
-            0
+           0
         ],
         "options": [
             "Use client-side encryption to encrypt the data that is being uploaded to the S3 buckets.",
@@ -1533,9 +1533,9 @@
             "Create bucket policies that require the use of server-side encryption with S3 managed encryption keys (SSE-S3) for S3 uploads.",
             "Enable the security option to encrypt the S3 buckets through the use of a default AWS Key Management Service (AWS KMS) key."
         ],
-        "total_times_question_attempted": 2,
-        "correct_times_question_attempted": 1,
-        "current_probability": 0.4
+        "total_times_question_attempted": 0,
+        "correct_times_question_attempted": 0,
+        "current_probability": 0
     },
     {
         "question": "Question 171\n\nA solutions architect observes that a nightly batch processing job is automatically scaled up for 1 hour before the desired Amazon EC2 capacity is reached. The peak\ncapacity is the \u2018same everyggnht and the batch jobs always start at 1 AM. The solutions architect needs to find a cost-effective solution that will allow for the desired EC2\ncapacity to be reached quickly and allow the Auto Scaling group to scale down after the batch jobs are complete.\n\nWhat should the solutions architect do to meet these requirements?\n",
@@ -1756,9 +1756,9 @@
             "192.168.1.0/32",
             "10.0.1.0/24"
         ],
-        "total_times_question_attempted": 1,
+        "total_times_question_attempted": 0,
         "correct_times_question_attempted": 0,
-        "current_probability": 1.0
+        "current_probability": 0
     },
     {
         "question": "Question 198\n\nA company is running a critical business application on Amazon EC2 instances behind an Application Load Balancer. The EC2 instances run in an Auto Scaling group and\naccess an Amazon RDS DB instance.\n\nThe design did not pass an operational review because the EC2 instances and the DB instance are all located in a single Availability Zone. A solutions architect must\nupdate the design to use a second Availability Zone.\n\nwi, solution will make the application highly available?\n",
@@ -2505,9 +2505,9 @@
             "Create an Amazon EventBridge rule to invoke an AWS Lambda function on a schedule. Configure the Lambda function to send the EC2 Auto Scaling status datadirectly to Amazon S3.",
             "Use a bootstrap script during the launch of an EC2 instance to install Amazon Kinesis Agent. Configure Kinesis Agent to collect the EC2 Auto Scaling status dataand send the data to Amazon Kinesis Data Firehose. Store the data in Amazon S3."
         ],
-        "total_times_question_attempted": 2,
+        "total_times_question_attempted": 0,
         "correct_times_question_attempted": 0,
-        "current_probability": 1.0
+        "current_probability": 0
     },
     {
         "question": "Question 162\n\nA company plans to use Amazon ElastiCache for its multi-tier web application. A solutions architect creates a Cache VPC for the ElastiCache cluster and an App VPC for\nthe application's Amazon EC2 instances. Both VPCs are in the us-east-1 Region.\n\nThe solutions architect must implement a solution to provide the application's EC2 instances with access to the ElastiCache cluster.\n\nWhich solution will meet these requirements MOST cost-effectively?\n",
