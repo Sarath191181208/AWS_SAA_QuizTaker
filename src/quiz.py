@@ -34,7 +34,10 @@ def get_random_question() -> Question:
     """
 
     scores = [ques["current_probability"] for ques in questions_and_answers]
-    idx = random.choices(range(len(questions_and_answers)), weights=scores)[0]
+    if sum(scores) == 0:
+        idx = random.randint(0, len(questions_and_answers) - 1)
+    else:
+        idx = random.choices(range(len(questions_and_answers)), weights=scores)[0]
     ques = questions_and_answers[idx]
     return Question(
         index=idx,
