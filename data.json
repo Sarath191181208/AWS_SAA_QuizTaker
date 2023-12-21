@@ -2,10 +2,10 @@
     {
         "question": "Question 1\n\nA company collects data for temperature, humidity, and atmospheric pressure in cities across multiple\ncontinents. The average volume of data that the company collects from each site daily is 500 GB. Each site\nhas a high-speed Internet connection.\n\nThe company wants to aggregate the data from all these global sites as quickly as possible in a single Amazon\nS3 bucket. The solution must minimize operational complexity.\n\nWhich solution meets these requirements?\n",
         "options": [
-            "Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to thedestination S3 bucket.",
-            "Upload the data from each site to an S3 bucket in the closest Region. Use S3 Cross-Region Replication to copy objects tothe destination S3 bucket. Then remove the data from the origin S3 bucket.",
-            "Schedule AWS Snowball Edge Storage Optimized device jobs daily to transfer data from each site to the closest Region. UseS3 Cross-Region Replication to copy objects to the destination S3 bucket.",
-            "Upload the data from each site to an Amazon EC2 instance in the closest Region. Store the data in an Amazon Elastic BlockStore (Amazon EBS) volume. At regular intervals, take an EBS snapshot and copy it to the Region that contains the destinationS3 bucket. Restore the EBS volume in that Region."
+            "Turn on S3 Transfer Acceleration on the destination S3 bucket. Use multipart uploads to directly upload site data to the destination S3 bucket.",
+            "Upload the data from each site to an S3 bucket in the closest Region. Use S3 Cross-Region Replication to copy objects to the destination S3 bucket. Then remove the data from the origin S3 bucket.",
+            "Schedule AWS Snowball Edge Storage Optimized device jobs daily to transfer data from each site to the closest Region. Use S3 Cross-Region Replication to copy objects to the destination S3 bucket.",
+            "Upload the data from each site to an Amazon EC2 instance in the closest Region. Store the data in an Amazon Elastic BlockStore (Amazon EBS) volume. At regular intervals, take an EBS snapshot and copy it to the Region that contains the destination S3 bucket. Restore the EBS volume in that Region."
         ],
         "answers": [],
         "total_times_question_attempted": 0,
