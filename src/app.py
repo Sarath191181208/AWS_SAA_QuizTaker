@@ -3,17 +3,56 @@ This file contains the main app logic and Flet UI entry point.
 """
 from copy import deepcopy
 from functools import partial
+from typing import Callable
 
 import flet as ft
 from src.quiz import Question
 from src.quiz import get_random_question, update_probability, update_question_in_file
 
-
 def main(page: ft.Page):
+    """
+    Main entry point of the app
+    """
+    page.title = "AWS Solutions Architect Associate Exam Prep"
+
+    def _on_next_page(container: ft.Container):
+        container.clean()
+        app(container, _on_next_page)
+
+    def _on_click(_: ft.ControlEvent):
+        page.clean()
+        app(app_container, _on_next_page)
+    
+    app_container = ft.Container(margin=ft.margin.only(left=20, top=10))
+    page.add(app_container)
+
+    page.add(
+        ft.Column(
+            controls=[
+                ft.Text("AWS Solutions Architect Associate Exam Prep", size=28),
+                ft.Container(margin=ft.margin.only(bottom=10)),
+                ft.Text(
+                    """
+                    This app is designed to help you prepare for the AWS Solutions Architect Associate Exam.
+                    It contains 200 questions and you can choose to answer any number of questions.
+                    The app will keep track of your progress and show you the questions that you have answered incorrectly more often.
+                    """,
+                    size=18,
+                ),
+                ft.Container(margin=ft.margin.only(bottom=10)),
+                ft.FilledButton("Start", on_click=_on_click),
+            ]
+        )
+    ) 
+
+
+def app(container: ft.Container, on_next_page_callback: Callable[[ft.Container], None]):
     """
     Main app logic
     """
-    page.title = "AWS Solutions Architect Associate Exam Prep"
+    page = container.page
+    if page is None:
+        raise ValueError("Container does not have a page")
 
     question_data = get_random_question()
     question_header, question_body = __get_header_and_description(question_data)
@@ -45,7 +84,6 @@ def main(page: ft.Page):
             # If no answer is found in the question data, show an alert dialog
             # asking the user to update the answer with the current selected
             _show_update_ans_alert_dialog()
-            return
 
         submit_button.text = "Next"
         submit_button.on_click = _go_to_next_page
@@ -63,7 +101,7 @@ def main(page: ft.Page):
 
     def _go_to_next_page(_: ft.ControlEvent | None):
         page.clean()
-        main(page)
+        on_next_page_callback(container)
 
     def _update_wrong_and_right_checkboxes_ui():
         for i in chosen_answers_list:
@@ -118,6 +156,7 @@ def main(page: ft.Page):
         on_click=on_submit_button_click,
         disabled=len(chosen_answers_list) < allowed_answers,
     )
+
 
     page.add(
         ft.Column(
