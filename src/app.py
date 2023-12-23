@@ -106,9 +106,17 @@ class SinlgeQuestion(ft.UserControl):
             ]
         )
 
+    def delete_tag(self, tag: str, _: ft.ControlEvent | None):
+        self.question.tags.remove(tag)
+        update_question_in_file(self.question)
+        self.update_tags_view()
+        self.update()
+        if self.page is not None:
+            self.page.update()
+
     def update_tags_view(self):
         self.tags_view: list[ft.Control] = [
-            ft.Chip(ft.Text(tag)) for tag in self.question.tags
+            ft.Chip(ft.Text(tag), on_delete=partial(self.delete_tag, tag))  for tag in self.question.tags
         ]
         header: ft.Row = self.header_row # type: ignore
         header.controls[1] = ft.Row(self.tags_view, wrap=True)
@@ -134,8 +142,12 @@ class SinlgeQuestion(ft.UserControl):
                 self.page.close_dialog()
                 self.page.update()
 
+        def change_input(tag: str, _: ft.ControlEvent):
+            tag_input.value = tag
+            dialog.update()
+
         tag_input = ft.TextField()
-        tags_list: list[ft.Control] = [ ft.TextButton(tag, on_click=lambda _: partial(assign_tag, tag) ) for tag in all_tags_list ]
+        tags_list: list[ft.Control] = [ ft.TextButton(tag, on_click=partial(change_input, tag) ) for tag in all_tags_list ]
         dialog = ft.AlertDialog(
             title=ft.Text("Add new tag"),
             content=ft.Column(

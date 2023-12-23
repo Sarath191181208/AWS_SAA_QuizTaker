@@ -22,6 +22,7 @@ class Question:
     correct_times_question_attempted: int
     current_probability: float
     tags: list[str] = field(default_factory=list)
+    attempt_history: list[bool] = field(default_factory=list)
 
 
 QUESTIONS_ANSWERS_FILE = "data.json"
@@ -40,7 +41,7 @@ def get_random_question() -> Question:
     """
 
     scores = [ques.get("current_probability", 0) for ques in questions_and_answers]
-    scores = [ 0.05 + x for x in scores ]
+    scores = [ 0.01 + x for x in scores ]
     if sum(scores) == 0:
         idx = random.randint(0, len(questions_and_answers) - 1)
     else:
@@ -76,6 +77,7 @@ def update_probability(question: Question, is_correct: bool) -> Question:
         new_question.current_probability = else_score
     new_question.total_times_question_attempted += 1
     new_question.correct_times_question_attempted += 1 if is_correct else 0
+    new_question.attempt_history.append(is_correct)
     return new_question
 
 
