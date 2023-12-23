@@ -4,10 +4,10 @@ This file contains the main app logic and Flet UI entry point.
 from copy import deepcopy
 from functools import partial
 from typing import Callable
-
+import re
 import flet as ft
 from src.quiz import Question
-from src.quiz import get_random_question, update_probability, update_question_in_file
+from src.quiz import get_random_question, update_probability, update_question_in_file, all_tags_list
 
 def main(page: ft.Page):
     """
@@ -35,11 +35,11 @@ def main(page: ft.Page):
                 ft.Text("AWS Solutions Architect Associate Exam Prep", size=28),
                 ft.Container(margin=ft.margin.only(bottom=10)),
                 ft.Text(
-                    """
+                    re.sub(r"\s+", " ", """
                     This app is designed to help you prepare for the AWS Solutions Architect Associate Exam.
                     It contains 200 questions and you can choose to answer any number of questions.
                     The app will keep track of your progress and show you the questions that you have answered incorrectly more often.
-                    """,
+                    """),
                     size=18,
                 ),
                 ft.Container(margin=ft.margin.only(bottom=10)),
@@ -84,10 +84,19 @@ class SinlgeQuestion(ft.UserControl):
             disabled=len(self.chosen_answers_list) < self.allowed_answers,
         )
 
+        self.tags_view = []
+        self.header_row: ft.Control = ft.Row([ 
+            ft.Text(ques_header, size=28), 
+            ft.Row(self.tags_view, wrap=True),
+            ft.IconButton(
+                icon=ft.icons.NEW_LABEL, on_click=self.show_add_tag_dialog
+            ),
+        ])
+        self.update_tags_view()
 
         return ft.Column(
             controls=[
-                ft.Text(ques_header, size=28),
+                self.header_row,
                 ft.Text(ques_body, size=18),
                 ft.Container(
                     ft.Column(options_group), margin=ft.margin.only(left=20, top=10)
@@ -97,6 +106,53 @@ class SinlgeQuestion(ft.UserControl):
             ]
         )
 
+    def update_tags_view(self):
+        self.tags_view: list[ft.Control] = [
+            ft.Chip(ft.Text(tag)) for tag in self.question.tags
+        ]
+        header: ft.Row = self.header_row # type: ignore
+        header.controls[1] = ft.Row(self.tags_view, wrap=True)
+
+    def show_add_tag_dialog(self, _: ft.ControlEvent):
+        """
+        Shows a dialog to add a new tag to the question
+        """
+        def _on_click(_: ft.ControlEvent):
+            tag = tag_input.value
+            if tag is None: 
+                return 
+            if tag in self.question.tags:
+                return 
+            assign_tag(tag)
+
+        def assign_tag(tag:str):
+            self.question.tags.append(tag)
+            update_question_in_file(self.question)
+            self.update_tags_view()
+            self.update()
+            if self.page is not None:
+                self.page.close_dialog()
+                self.page.update()
+
+        tag_input = ft.TextField()
+        tags_list: list[ft.Control] = [ ft.TextButton(tag, on_click=lambda _: partial(assign_tag, tag) ) for tag in all_tags_list ]
+        dialog = ft.AlertDialog(
+            title=ft.Text("Add new tag"),
+            content=ft.Column(
+                tight=True,
+                scroll=ft.ScrollMode.ALWAYS,
+                controls=[
+                    ft.Text("Enter the new tag"),
+                    tag_input,
+                    ft.Container(margin=ft.margin.only(bottom=10)),
+                    ft.FilledButton("Add", on_click=_on_click),
+                    ft.Row(tags_list, wrap=True),
+                ]
+            ),
+        )
+        if self.page is not None:
+            self.page.show_dialog(dialog)
+    
     def get_header_and_description(self):
         global __get_header_and_description
         header_text, body = self.__get_header_and_description(self.question)
@@ -193,7 +249,7 @@ class SinlgeQuestion(ft.UserControl):
         """
         ques = question_data.question.split("\n")
         question_header = ques[0]
-        question_body = "".join(ques[1:])
+        question_body = re.sub(r'\s+', " ", r" ".join(ques[1:]))
         return question_header, question_body
 
 

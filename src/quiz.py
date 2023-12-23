@@ -4,7 +4,8 @@ This module contains the functions related to the quiz
 
 import json
 import random
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
+
 from copy import deepcopy
 
 
@@ -13,7 +14,6 @@ class Question:
     """
     Question dataclass
     """
-
     index: int
     question: str
     answers: list[int]
@@ -21,11 +21,17 @@ class Question:
     total_times_question_attempted: int
     correct_times_question_attempted: int
     current_probability: float
+    tags: list[str] = field(default_factory=list)
 
 
 QUESTIONS_ANSWERS_FILE = "data.json"
 with open(QUESTIONS_ANSWERS_FILE, encoding="utf-8") as _file:
     questions_and_answers: list[dict] = json.load(_file)
+
+all_tags_list = []
+for ques in questions_and_answers:
+    all_tags_list.extend(ques.get("tags", []))
+all_tags_list = list(set(all_tags_list))
 
 
 def get_random_question() -> Question:
@@ -33,7 +39,8 @@ def get_random_question() -> Question:
     returns a random question from the list of questions
     """
 
-    scores = [ques["current_probability"] for ques in questions_and_answers]
+    scores = [ques.get("current_probability", 0) for ques in questions_and_answers]
+    scores = [ 0.05 + x for x in scores ]
     if sum(scores) == 0:
         idx = random.randint(0, len(questions_and_answers) - 1)
     else:
@@ -78,6 +85,10 @@ def update_question_in_file(question: Question):
     """
     idx = question.index
     ques_dict = asdict(question)
+    # update any new tags 
+    for tag in question.tags:
+        if tag not in all_tags_list:
+            all_tags_list.append(tag)
     # remove the index from the dict
     ques_dict.pop("index")
     questions_and_answers[idx] = ques_dict
