@@ -1,4 +1,5 @@
 # custom ignore
+htmls/
 tesseract/
 videos/
 questions/
