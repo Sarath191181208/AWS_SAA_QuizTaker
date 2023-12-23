@@ -1051,9 +1051,9 @@
             "Replace the NLB with an Application Load Balancer. Enable HTTP health checks by supplying the URL of the company's application. Configure an Auto Scalingaction to replace unhealthy instances.",
             "Create an Amazon Cloud Watch alarm that monitors the UnhealthyHostCount metric for the NLB. Configure an Auto Scaling action to replace unhealthy instanceswhen the alarm is in the ALARM state."
         ],
-        "total_times_question_attempted": 0,
-        "correct_times_question_attempted": 0,
-        "current_probability": 0
+        "total_times_question_attempted": 1,
+        "correct_times_question_attempted": 1,
+        "current_probability": 0.0
     },
     {
         "question": "Question 71\n\n A company runs a shopping application that uses Amazon DynamoDB to store customer information. In case of data corruption, a solutions architect needs to design a solution that meets a recovery point objective (RPO) of 15 minutes and a recovery time objective (RTO) of 1 hour. What should the solutions architect recommend to meet these requirements? ",
@@ -2744,9 +2744,9 @@
             "Configure the DB instance in one Availability Zone, and create multiple read replicas in a separate Availability Zone.",
             "Configure the DB instance in one Availability Zone, and configure AWS Database Migration Service (AWS DMS) change data capture (CDC) tasks."
         ],
-        "total_times_question_attempted": 0,
-        "correct_times_question_attempted": 0,
-        "current_probability": 0
+        "total_times_question_attempted": 1,
+        "correct_times_question_attempted": 1,
+        "current_probability": 0.0
     },
     {
         "question": "Question 182\n\nA company runs a web application that is deployed on Amazon EC2 instances in the private subnet of a VPC. An Application Load Balancer (ALB) that extends across the\npublic subnets directs web traffic to the EC2 instances. The company wants to implement new security measures to restrict inbound traffic from the ALB to the EC2\ninstances while preventing access from any other source inside or outside the private subnet of the EC2 instances.\n\nWhich solution will meet these requirements?\n",
