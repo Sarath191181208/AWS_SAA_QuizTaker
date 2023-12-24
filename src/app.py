@@ -14,6 +14,7 @@ def main(page: ft.Page):
     Main entry point of the app
     """
     page.title = "AWS Solutions Architect Associate Exam Prep"
+    page.scroll = ft.ScrollMode.ADAPTIVE
 
     def _on_next_page():
         app_container.clean()
@@ -92,17 +93,19 @@ class SinlgeQuestion(ft.UserControl):
                 icon=ft.icons.NEW_LABEL, on_click=self.show_add_tag_dialog
             ),
         ])
+        self.explination_view = ft.Container()
         self.update_tags_view()
 
         return ft.Column(
             controls=[
                 self.header_row,
-                ft.Text(ques_body, size=18),
+                ft.Text(ques_body, size=18, selectable=True),
                 ft.Container(
                     ft.Column(options_group), margin=ft.margin.only(left=20, top=10)
                 ),
                 ft.Container(margin=ft.margin.only(bottom=10)),
                 self.submit_button,
+                self.explination_view,
             ]
         )
 
@@ -191,10 +194,24 @@ class SinlgeQuestion(ft.UserControl):
 
         self.submit_button.text = "Next"
         self.submit_button.on_click = self.go_to_next_page
+        self.show_explination()
     
         if len(self.question.answers) > 0:
             self.update_question_details()
         self.update()
+
+    def show_explination(self):
+        explination = self.question.explination
+        if explination is not None:
+            self.explination_view.content = ft.Column(
+                controls=[
+                    ft.Text("Explination", size=18),
+                    ft.Text(explination, size=14, selectable=True),
+                ]
+            )
+            self.update()
+        if self.page is not None:
+            self.page.update()
 
     def update_wrong_and_right_checkboxes_ui(self):
         for i in self.question.answers:

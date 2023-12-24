@@ -21,6 +21,7 @@ class Question:
     total_times_question_attempted: int
     correct_times_question_attempted: int
     current_probability: float
+    explination: str | None = None
     tags: list[str] = field(default_factory=list)
     attempt_history: list[bool] = field(default_factory=list)
 
@@ -32,7 +33,7 @@ with open(QUESTIONS_ANSWERS_FILE, encoding="utf-8") as _file:
 all_tags_list = []
 for ques in questions_and_answers:
     all_tags_list.extend(ques.get("tags", []))
-all_tags_list = list(set(all_tags_list))
+all_tags_list = sorted(list(set(all_tags_list)))
 
 
 def get_random_question() -> Question:
@@ -56,6 +57,8 @@ def get_random_question() -> Question:
         correct_times_question_attempted=ques.get("correct_times_question_attempted", 0),
         current_probability=ques.get("current_probability", 0),
         tags=ques.get("tags", []),
+        attempt_history=ques.get("attempt_history", []),
+        explination=ques.get("explination", None)
     )
     idx += 1
     idx %= len(questions_and_answers)
