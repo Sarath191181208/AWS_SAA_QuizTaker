@@ -55,6 +55,7 @@ def get_random_question() -> Question:
         total_times_question_attempted=ques.get("total_times_question_attempted", 0),
         correct_times_question_attempted=ques.get("correct_times_question_attempted", 0),
         current_probability=ques.get("current_probability", 0),
+        tags=ques.get("tags", []),
     )
     idx += 1
     idx %= len(questions_and_answers)
