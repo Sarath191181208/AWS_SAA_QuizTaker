@@ -143,8 +143,7 @@ class SinlgeQuestion(ft.UserControl):
                 self.page.update()
 
         def change_input(tag: str, _: ft.ControlEvent):
-            tag_input.value = tag
-            dialog.update()
+            assign_tag(tag)
 
         tag_input = ft.TextField()
         tags_list: list[ft.Control] = [ ft.TextButton(tag, on_click=partial(change_input, tag) ) for tag in all_tags_list ]
