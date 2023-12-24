@@ -60,8 +60,6 @@ def get_random_question() -> Question:
         attempt_history=ques.get("attempt_history", []),
         explination=ques.get("explination", None)
     )
-    idx += 1
-    idx %= len(questions_and_answers)
     return ques
 
 
