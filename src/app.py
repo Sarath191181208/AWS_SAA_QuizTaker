@@ -5,9 +5,14 @@ from copy import deepcopy
 from functools import partial
 from typing import Callable
 import re
+import json 
+
 import flet as ft
-from src.quiz import Question
+from src.quiz import Question, View
 from src.quiz import get_random_question, update_probability, update_question_in_file, all_tags_list
+
+OPTIONS_MARGIN = ft.margin.only(left=10)
+CHECKBOX_MARGIN = ft.margin.all(-14)
 
 def main(page: ft.Page):
     """
@@ -28,7 +33,7 @@ def main(page: ft.Page):
         page.add(app_container)
         _on_next_page()
     
-    app_container = ft.Container(margin=ft.margin.only(left=20, top=10))
+    app_container = ft.Container(margin=ft.margin.only(left=5, top=10))
 
     page.add(
         ft.Column(
@@ -64,17 +69,27 @@ class SinlgeQuestion(ft.UserControl):
 
         self.checkboxes = []
         for i in range(len(self.question.options)):
-            self.checkboxes.append(ft.Checkbox(on_change=partial(self.on_option_selected, i)))
+            check_box = ft.Checkbox(
+                on_change=partial(self.on_option_selected, i),
+            )
+            self.checkboxes.append(check_box)
 
         options_group: list[ft.Control] = [
-            ft.Row(
-                [
-                    self.checkboxes[i],
-                    *self.__split_text_to_widgets(
-                        option, partial(self.on_option_selected, i), size=14
-                    ),
-                ],
-                wrap=True,  # Wrap the options to next line if the options exceed the width of the screen
+            ft.Container(
+                ft.Row(
+                    [
+                        ft.Container(
+                            self.checkboxes[i],
+                            margin = CHECKBOX_MARGIN,
+                        ),
+                        *self.__split_text_to_widgets(
+                            option, partial(self.on_option_selected, i), size=14
+                        ),
+                        ft.Container(margin=ft.margin.only(bottom=4))
+                    ],
+                    wrap=True,  # Wrap the options to next line if the options exceed the width of the screen
+                ),
+                on_click=partial(self.on_option_selected, i),
             )
             for i, option in enumerate(self.question.options)
         ]
@@ -92,22 +107,56 @@ class SinlgeQuestion(ft.UserControl):
             ft.IconButton(
                 icon=ft.icons.NEW_LABEL, on_click=self.show_add_tag_dialog
             ),
-        ])
+        ], wrap=True)
         self.explination_view = ft.Container()
         self.update_tags_view()
+
+        self.additional_view: ft.Control = ft.Column(
+            controls=[
+                self.get_json_view(view, silent=False)
+                for view in self.question.views
+            ]
+        ) if self.question.views is not None else ft.Container()
 
         return ft.Column(
             controls=[
                 self.header_row,
                 ft.Text(ques_body, size=18, selectable=True),
-                ft.Container(
-                    ft.Column(options_group), margin=ft.margin.only(left=20, top=10)
-                ),
+                self.additional_view,
+                ft.Container(margin=ft.margin.only(bottom=16)),
+                ft.Container(ft.Column(options_group), margin=OPTIONS_MARGIN),
                 ft.Container(margin=ft.margin.only(bottom=10)),
                 self.submit_button,
                 self.explination_view,
             ]
         )
+
+    def get_json_view(self, view: View, silent: bool = True) -> ft.Control:
+        """
+        Returns a Flet control based on the view json
+        if silent is True, then it will not raise an error if the view is invalid
+        """
+        try: 
+            view_type = view.type
+            if view_type == "text":
+                return ft.Text(str(view.value))
+            elif view_type == "json":
+                json_str = json.dumps(view.value, indent=4)
+                md_text = f"```json\n{json_str}\n```"
+                md_header = view.name
+                md = f"### {md_header}\n{md_text}\n"
+                return ft.Markdown(md,
+                    extension_set=ft.MarkdownExtensionSet.GITHUB_WEB,
+                    code_theme="tomorrow-night-eighties",
+                    code_style=ft.TextStyle(font_family="Roboto Mono"),)
+            else:
+                if not silent:
+                    raise ValueError(f"Invalid view type {view_type}")
+        except KeyError:
+            if not silent:
+                raise 
+        return ft.Container()
+
 
     def delete_tag(self, tag: str, _: ft.ControlEvent | None):
         self.question.tags.remove(tag)
@@ -321,7 +370,7 @@ class SinlgeQuestion(ft.UserControl):
         return [
             ft.Container(
                 ft.Text(line, **kwargs),
-                margin=ft.margin.only(right=-6, top=-3, bottom=-3),
+                margin=ft.margin.only(right=-6, top=-4, bottom=-4),
                 on_click=lambda _: click_fn(None),
             )
             for line in text.replace("\n", "").split()

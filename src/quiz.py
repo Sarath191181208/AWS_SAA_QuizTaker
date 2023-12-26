@@ -8,6 +8,12 @@ from dataclasses import asdict, dataclass, field
 
 from copy import deepcopy
 
+@dataclass 
+class View:
+    type: str 
+    name: str 
+    value: str | dict | list | None = None
+
 
 @dataclass
 class Question:
@@ -24,6 +30,12 @@ class Question:
     explination: str | None = None
     tags: list[str] = field(default_factory=list)
     attempt_history: list[bool] = field(default_factory=list)
+    views: list[View] = field(default_factory=list)
+
+    def __post_init__(self):
+        # parse and convert the views to View objects
+        if self.views:
+            self.views = [View(**view) for view in self.views] # type: ignore
 
 
 QUESTIONS_ANSWERS_FILE = "data.json"
@@ -59,6 +71,8 @@ def get_random_question() -> Question:
         tags=ques.get("tags", []),
         attempt_history=ques.get("attempt_history", []),
         explination=ques.get("explination", None)
+        explination=ques.get("explination", None),
+        views=ques.get("views", None)
     )
     return ques
 
